@@ -41,7 +41,7 @@ clock = pygame.time.Clock()
 
 # Тут опишите все классы игры.
 class GameObject:
-
+    """Начальные данные игры."""
     def __init__(self, x, y, color, size=GRID_SIZE):
         self.x = x
         self.y = y
@@ -55,29 +55,34 @@ class GameObject:
 
 
 class Apple(GameObject):
-
+    """Класс, представляющий яблоко в игре."""
     def __init__(self):
+        """Инициализация яблока."""
         super().__init__(
-            self.position_random_X(), self.position_random_Y(), APPLE_COLOR
+            self.position_random_x(), self.position_random_y(), APPLE_COLOR
         )
 
-    def position_random_X(self):
+    def position_random_x(self):
+        """Позиция относительно X."""
         return random.randint(0, GRID_WIDTH - 1) * GRID_SIZE
 
-    def position_random_Y(self):
+    def position_random_y(self):
+        """Позиция относительно Y."""
         return random.randint(0, GRID_HEIGHT - 1) * GRID_SIZE
 
     def respawn(self):
-        self.x = self.position_random_X()
-        self.y = self.position_random_Y()
+        """Перемещение яблока после поедания."""
+        self.x = self.position_random_x()
+        self.y = self.position_random_y()
         self.rect = pygame.Rect(
             self.x, self.y, self.size, self.size
         )
 
 
 class Snake(GameObject):
-
+    """Класс, представляющий змейку в игре."""
     def __init__(self):
+        """Инициализация змейки."""
         self.body = [(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)]
         self.direction = RIGHT
         self.next_direction = RIGHT
@@ -85,7 +90,7 @@ class Snake(GameObject):
         self.length = 1
 
     def move(self):
-
+        """Перемещает змейку."""
         head_x, head_y = self.body[0]
         new_head_x = (head_x + self.direction[0] * GRID_SIZE)
         new_head_y = (head_y + self.direction[1] * GRID_SIZE)
@@ -110,7 +115,7 @@ class Snake(GameObject):
         self.direction = self.next_direction
 
     def draw(self):
-
+        """Рисование змейки."""
         for x, y in self.body:
             pygame.draw.rect(screen, self.color, (x, y, GRID_SIZE, GRID_SIZE))
             pygame.draw.rect(
@@ -118,6 +123,7 @@ class Snake(GameObject):
             )
 
     def eating_apple(self, apple):
+        """Поедание яблока змейкой."""
         if self.body[0] == (apple.x, apple.y):
             self.length += 1
             apple.respawn()
@@ -125,6 +131,7 @@ class Snake(GameObject):
         return False
 
     def reset(self):
+        """Точка начала игры заново."""
         self.length = 1
         self.body = [(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)]
         self.direction = RIGHT
