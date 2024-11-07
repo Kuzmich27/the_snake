@@ -93,7 +93,7 @@ class Snake(GameObject):
         super().__init__(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, SNAKE_COLOR)
         self.body = [(self.x, self.y)]
         self.direction = RIGHT
-        self.next_direction = RIGHT
+        self.update_direction = RIGHT
         self.position = [(self.x, self.y)]
         self.body_color = SNAKE_COLOR
         self.length = 1
@@ -122,7 +122,7 @@ class Snake(GameObject):
         self.body.insert(0, (new_head_x, new_head_y))
         if len(self.body) > self.length:
             self.body.pop()
-        self.direction = self.next_direction
+        self.direction = self.update_direction
 
     def draw(self):
         """Рисование змейки."""
@@ -145,7 +145,13 @@ class Snake(GameObject):
         self.length = 1
         self.body = [(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)]
         self.direction = RIGHT
-        self.next_direction = RIGHT
+        self.update_direction = RIGHT
+
+    def reset(self):
+        pass
+
+    def update_direction(self):
+        pass
 
 
 def update_direction(snake):
@@ -156,13 +162,13 @@ def update_direction(snake):
             raise SystemExit
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP and snake.direction != DOWN:
-                snake.next_direction = UP
+                snake.update_direction = UP
             elif event.key == pygame.K_DOWN and snake.direction != UP:
-                snake.next_direction = DOWN
+                snake.update_direction = DOWN
             elif event.key == pygame.K_LEFT and snake.direction != RIGHT:
-                snake.next_direction = LEFT
+                snake.update_direction = LEFT
             elif event.key == pygame.K_RIGHT and snake.direction != LEFT:
-                snake.next_direction = RIGHT
+                snake.update_direction = RIGHT
 
 
 def main():
