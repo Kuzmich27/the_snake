@@ -76,7 +76,7 @@ class Apple(GameObject):
         """Слуайная позиция относительно Y."""
         return random.randint(0, GRID_HEIGHT - 1) * GRID_SIZE
 
-    def respawn(self):
+    def randomize_position(self):
         """Перемещение яблока в случайную позицию."""
         self.x = self.position_random_x()
         self.y = self.position_random_y()
@@ -94,7 +94,7 @@ class Snake(GameObject):
         self.body = [(self.x, self.y)]
         self.direction = RIGHT
         self.next_direction = RIGHT
-        self.positions = [(self.x, self.y)]
+        self.position = [(self.x, self.y)]
         self.body_color = SNAKE_COLOR
         self.length = 1
 
@@ -140,7 +140,7 @@ class Snake(GameObject):
             return True
         return False
 
-    def reset(self):
+    def get_head_position(self):
         """Возвращение змейки в начальное положение."""
         self.length = 1
         self.body = [(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)]
@@ -148,7 +148,7 @@ class Snake(GameObject):
         self.next_direction = RIGHT
 
 
-def handle_keys(snake):
+def update_direction(snake):
     """Изменение направления движения."""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -174,7 +174,7 @@ def main():
 
     while True:
         clock.tick(SPEED)
-        handle_keys(snake)
+        update_direction(snake)
         snake.move()
         if snake.eating_apple(apple):
             pass
