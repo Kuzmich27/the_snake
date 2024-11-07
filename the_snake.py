@@ -41,8 +41,10 @@ clock = pygame.time.Clock()
 
 # Тут опишите все классы игры.
 class GameObject:
-    """Начальные данные игры."""
+    """Базовый класс для игровый объектов."""
+
     def __init__(self, x, y, color, size=GRID_SIZE):
+        """Инициализация GameObject"""
         self.x = x
         self.y = y
         self.color = color
@@ -50,12 +52,14 @@ class GameObject:
         self.rect = pygame.Rect(x, y, size, size)
 
     def draw(self):
+        """Отрисовывает объект на экране"""
         pygame.draw.rect(screen, self.color, self.rect)
         pygame.draw.rect(screen, BORDER_COLOR, self.rect, 1)
 
 
 class Apple(GameObject):
-    """Класс, представляющий яблоко в игре."""
+    """Класс, представляющий яблоко."""
+
     def __init__(self):
         """Инициализация яблока."""
         super().__init__(
@@ -63,15 +67,15 @@ class Apple(GameObject):
         )
 
     def position_random_x(self):
-        """Позиция относительно X."""
+        """Случайная позиция относительно X."""
         return random.randint(0, GRID_WIDTH - 1) * GRID_SIZE
 
     def position_random_y(self):
-        """Позиция относительно Y."""
+        """Слуайная позиция относительно Y."""
         return random.randint(0, GRID_HEIGHT - 1) * GRID_SIZE
 
     def respawn(self):
-        """Перемещение яблока после поедания."""
+        """Перемещение яблока в случайную позицию."""
         self.x = self.position_random_x()
         self.y = self.position_random_y()
         self.rect = pygame.Rect(
@@ -80,7 +84,8 @@ class Apple(GameObject):
 
 
 class Snake(GameObject):
-    """Класс, представляющий змейку в игре."""
+    """Класс, представляющий змейку."""
+
     def __init__(self):
         """Инициализация змейки."""
         self.body = [(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)]
@@ -90,11 +95,12 @@ class Snake(GameObject):
         self.length = 1
 
     def move(self):
-        """Перемещает змейку."""
+        """Перемещает змейку и обрабатывает столкнование."""
         head_x, head_y = self.body[0]
         new_head_x = (head_x + self.direction[0] * GRID_SIZE)
         new_head_y = (head_y + self.direction[1] * GRID_SIZE)
 
+        # Обработка границ
         if new_head_x < 0:
             new_head_x = SCREEN_WIDTH
         elif new_head_x >= SCREEN_WIDTH:
@@ -106,7 +112,7 @@ class Snake(GameObject):
             new_head_y = (head_y + self.direction[1] * GRID_SIZE) % GRID_SIZE
 
         if (new_head_x, new_head_y) in self.body:
-            self.reset()
+            self.reset()  # Добавление функции reset
             return
 
         self.body.insert(0, (new_head_x, new_head_y))
@@ -131,7 +137,7 @@ class Snake(GameObject):
         return False
 
     def reset(self):
-        """Точка начала игры заново."""
+        """Возвращение змейки в начальное положение."""
         self.length = 1
         self.body = [(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)]
         self.direction = RIGHT
@@ -139,6 +145,7 @@ class Snake(GameObject):
 
 
 def handle_keys(snake):
+    """Изменение направления движения."""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -155,6 +162,7 @@ def handle_keys(snake):
 
 
 def main():
+    """Основной цикл игры."""
     snake = Snake()
     apple = Apple()
     pygame.init()
