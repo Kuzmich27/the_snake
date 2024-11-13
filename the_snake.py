@@ -1,6 +1,6 @@
 import random
+
 import pygame as pg
-from typing import Tuple
 
 
 # Константы для размеров поля и сетки:
@@ -10,23 +10,27 @@ GRID_SIZE: int = 20
 GRID_WIDTH: int = SCREEN_WIDTH // GRID_SIZE
 GRID_HEIGHT: int = SCREEN_HEIGHT // GRID_SIZE
 
+# Создаем алиас для типа
+DIRECTION = tuple[int, int]
+POINTER = tuple[int, int, int]
+
 # Направления движения:
-UP: Tuple[int, int] = (0, -1)
-DOWN: Tuple[int, int] = (0, 1)
-LEFT: Tuple[int, int] = (-1, 0)
-RIGHT: Tuple[int, int] = (1, 0)
+UP: DIRECTION = (0, -1)
+DOWN: DIRECTION = (0, 1)
+LEFT: DIRECTION = (-1, 0)
+RIGHT: DIRECTION = (1, 0)
 
 # Цвет фона - черный:
-BOARD_BACKGROUND_COLOR: Tuple[int, int, int] = (0, 0, 0)
+BOARD_BACKGROUND_COLOR: POINTER = (0, 0, 0)
 
 # Цвет границы ячейки
-BORDER_COLOR: Tuple[int, int, int] = (93, 216, 228)
+BORDER_COLOR: POINTER = (93, 216, 228)
 
 # Цвет яблока
-APPLE_COLOR: Tuple[int, int, int] = (255, 0, 0)
+APPLE_COLOR: POINTER = (255, 0, 0)
 
 # Цвет змейки
-SNAKE_COLOR: Tuple[int, int, int] = (0, 255, 0)
+SNAKE_COLOR: POINTER = (0, 255, 0)
 
 # Скорость движения змейки:
 SPEED: int = 20
@@ -44,7 +48,7 @@ clock = pg.time.Clock()
 class GameObject:
     """Базовый класс для игровый объектов."""
 
-    def __init__(self, body_color: Tuple[int, int, int] = APPLE_COLOR):
+    def __init__(self, body_color: POINTER = APPLE_COLOR):
         """Инициализация GameObject"""
         self.position = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
         self.body_color = body_color
@@ -57,20 +61,22 @@ class GameObject:
 class Apple(GameObject):
     """Класс, представляющий яблоко."""
 
-    def __init__(self):
+    def __init__(self, occupied_positions=None):
         """Инициализация яблока."""
         super().__init__()
-        self.randomize_position([])
         self.body_color = APPLE_COLOR
+        if occupied_positions is None:
+            self.body_color = []
+        self.randomize_position(occupied_positions)
 
-    def randomize_position(self, snake_positions):
+    def randomize_position(self, occupied_positions):
         """Случайная позиция яблока."""
         while True:
             self.position = (
                 random.randint(0, GRID_WIDTH - 1) * GRID_SIZE,
                 random.randint(0, GRID_HEIGHT - 1) * GRID_SIZE
             )
-            if self.position not in [tuple(pos) for pos in snake_positions]:
+            if self.position not in occupied_positions:
                 break
 
     def draw(self):
@@ -83,11 +89,11 @@ class Apple(GameObject):
 class Snake(GameObject):
     """Класс, представляющий змейку."""
 
-    def __init__(self, body_color: Tuple[int, int, int] = SNAKE_COLOR):
+    def __init__(self, body_color: POINTER = SNAKE_COLOR):
         """Инициализация змейки."""
         super().__init__(body_color=body_color)
         self.length = 1
-        self.positions = [list(self.position)]
+        self.positions = [(self.position)]
         self.direction = RIGHT
         self.next_direction = None
 
@@ -148,7 +154,7 @@ def handle_keys(game_object):
 def main():
     """Основной цикл игры."""
     snake = Snake()
-    apple = Apple()
+    apple = Apple(occupied_positions=snake.positions)
     pg.init()
 
     while True:
@@ -165,7 +171,6 @@ def main():
             tuple(pos) for pos in snake.positions[4:]
         ]:
             snake.reset()  # Добавление функции reset
-            return
 
         screen.fill(BOARD_BACKGROUND_COLOR)
         snake.draw()
