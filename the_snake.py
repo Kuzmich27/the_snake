@@ -66,7 +66,7 @@ class Apple(GameObject):
         super().__init__()
         self.body_color = APPLE_COLOR
         if occupied_positions is None:
-            self.body_color = []
+            occupied_positions = []
         self.randomize_position(occupied_positions)
 
     def randomize_position(self, occupied_positions):
