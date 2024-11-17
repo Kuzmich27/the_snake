@@ -22,6 +22,9 @@ DOWN: DIRECTION = (0, 1)
 LEFT: DIRECTION = (-1, 0)
 RIGHT: DIRECTION = (1, 0)
 
+# Цвет стандартный - белый:
+DEFOLT_COLOR: COLOR = (255, 255, 255)
+
 # Цвет фона - черный:
 BOARD_BACKGROUND_COLOR: COLOR = (0, 0, 0)
 
@@ -35,7 +38,7 @@ APPLE_COLOR: COLOR = (255, 0, 0)
 SNAKE_COLOR: COLOR = (0, 255, 0)
 
 # Скорость движения змейки:
-SPEED: int = 5
+SPEED: int = 20
 
 # Настройка игрового окна:
 screen = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
@@ -50,7 +53,7 @@ clock = pg.time.Clock()
 class GameObject:
     """Базовый класс для игровый объектов."""
 
-    def __init__(self, body_color: COLOR = APPLE_COLOR):
+    def __init__(self, body_color: COLOR = DEFOLT_COLOR):
         """Инициализация GameObject"""
         self.position = (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
         self.body_color = body_color
@@ -63,13 +66,13 @@ class GameObject:
 class Apple(GameObject):
     """Класс, представляющий яблоко."""
 
-    def __init__(self, occupied_positions: Optional[list[POSITION]] = None):
+    def __init__(self, body_color=APPLE_COLOR,
+                 occupied_positions: Optional[list[POSITION]] = None):
         """Инициализация яблока."""
-        super().__init__(body_color=APPLE_COLOR)
+        super().__init__(body_color)
         if occupied_positions is None:
             occupied_positions = []
-        else:
-            self.randomize_position(occupied_positions)
+        self.randomize_position(occupied_positions)
 
     def randomize_position(self, occupied_positions: list[POSITION]):
         """Случайная позиция яблока."""
@@ -93,7 +96,7 @@ class Snake(GameObject):
 
     def __init__(self, body_color: COLOR = SNAKE_COLOR):
         """Инициализация змейки."""
-        super().__init__(body_color=body_color)
+        super().__init__(body_color)
         self.length = 1
         self.positions = [(self.position)]
         self.direction = RIGHT
@@ -163,7 +166,7 @@ def main():
         handle_keys(snake)
         snake.update_direction()
 
-        if snake.get_head_position() == tuple(apple.position):
+        if snake.get_head_position() == apple.position:
             snake.length += 1
             apple.randomize_position(snake.positions)
 
